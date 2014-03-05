@@ -1,0 +1,33 @@
+# Maintainer: Benoit Pierre <benoit.pierre@gmail.com>
+
+pkgname=compton
+pkgver=
+pkgrel=1
+pkgdesc='X Compositor (a fork of xcompmgr-dana)'
+arch=('i686' 'x86_64')
+url='https://github.com/chjj/compton'
+license=('MIT')
+depends=('libgl' 'libdbus' 'libxcomposite' 'libxdamage' 'libxrandr' 'pcre' 'libconfig' 'libxinerama')
+optdepends=('xorg-xprop: for compton-trans'
+            'xorg-xwininfo: for compton-trans')
+makedepends=('asciidoc')
+conflicts=('compton-git')
+
+build() {
+  cd $pkgname-$pkgver
+  make PREFIX=/usr
+  make docs
+}
+
+package() {
+  cd $pkgname-$pkgver
+
+  make PREFIX="$pkgdir/usr" install
+
+  # install license
+  install -D -m644 "LICENSE" "$pkgdir/usr/share/licenses/$_gitname/LICENSE"
+
+  # example conf
+  install -D -m644 "compton.sample.conf" "$pkgdir/etc/xdg/compton.conf.example"
+  make DESTDIR="$pkgdir" install
+}
